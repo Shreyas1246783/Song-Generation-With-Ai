@@ -1,0 +1,289 @@
+{
+  "name": "song generation",
+  "nodes": [
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        -400,
+        -96
+      ],
+      "id": "470cd548-5faa-40c8-9348-e417e715bd23",
+      "name": "When chat message received",
+      "webhookId": "673cd7a2-02dd-4df5-bb8b-1d5cd88c0963"
+    },
+    {
+      "parameters": {
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        -176,
+        -96
+      ],
+      "id": "a159e5a5-ee89-4245-a5f1-7004320631d6",
+      "name": "Generate lyrics"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        -104,
+        128
+      ],
+      "id": "efb60406-a46c-45fb-9c41-ed08d13b67af",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "ZcEbdlPkNwMBJvPd",
+          "name": "Google Gemini(PaLM) Api account 7360"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.data.response.sunoData[0].audioUrl }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        848,
+        -96
+      ],
+      "id": "bf3abfe6-ef44-4c94-99ac-61064b60efc0",
+      "name": "Download Audio"
+    },
+    {
+      "parameters": {
+        "url": "https://api.sunoapi.org/api/v1/generate/record-info",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "taskId",
+              "value": "={{ $json.data.taskId }}"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Accept",
+              "value": "application/json"
+            },
+            {
+              "name": "Authorization",
+              "value": "Bearer ebd5b25feea226f312291f4511ee4adc"
+            }
+          ]
+        },
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        624,
+        -96
+      ],
+      "id": "558d142e-afbb-48c0-b8a3-6f0608b242ce",
+      "name": "generate-audio"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.0-flash-001",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        -400,
+        232
+      ],
+      "id": "37e6d810-0654-4f25-b77b-2299f9564491",
+      "name": "Google Gemini Chat Model1"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.sunoapi.org/api/v1/generate",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Accept",
+              "value": "application/json"
+            },
+            {
+              "name": "Authorization",
+              "value": "Bearer ebd5b25feea226f312291f4511ee4adc"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "prompt",
+              "value": "={{ $json.text }}"
+            },
+            {
+              "name": "style",
+              "value": "Classical"
+            },
+            {
+              "name": "title",
+              "value": "Peaceful Piano Meditation"
+            },
+            {
+              "name": "customMode",
+              "value": "true"
+            },
+            {
+              "name": "model",
+              "value": "V3_5"
+            },
+            {
+              "name": "negativeTags",
+              "value": "Heavy Metal, Upbeat Drums"
+            },
+            {
+              "name": "callBackUrl",
+              "value": "https://api.example.com/callback"
+            },
+            {
+              "name": "Instrumental",
+              "value": "false"
+            }
+          ]
+        },
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        176,
+        -96
+      ],
+      "id": "b5997680-19cb-46ef-aa99-64c4ca9463ab",
+      "name": "Create Audio Task1"
+    },
+    {
+      "parameters": {
+        "amount": 60
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        400,
+        -96
+      ],
+      "id": "f0863515-7036-4829-b2ea-10174cfaaff7",
+      "name": "Wait1",
+      "webhookId": "65d3eab2-cea3-4c79-864b-4ae03617d899"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "Generate lyrics",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Generate lyrics",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate lyrics": {
+      "main": [
+        [
+          {
+            "node": "Create Audio Task1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "generate-audio": {
+      "main": [
+        [
+          {
+            "node": "Download Audio",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model1": {
+      "ai_languageModel": [
+        []
+      ]
+    },
+    "Create Audio Task1": {
+      "main": [
+        [
+          {
+            "node": "Wait1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait1": {
+      "main": [
+        [
+          {
+            "node": "generate-audio",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "df57809a-ac72-4a35-8550-610ca1a12659",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "969257b09ad2942bbaff2e2288304f4969030574d109cdeca05bf11f630884df"
+  },
+  "id": "9r452yPSQ9Xg7bEr",
+  "tags": []
+}
