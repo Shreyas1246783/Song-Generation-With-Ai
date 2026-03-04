@@ -1,0 +1,21 @@
+✨ Key Features
+    Automated Scriptwriting: Uses the @n8n/n8n-nodes-langchain.chainLlm node with Google Gemini to draft conversational, 2-minute scripts from any topic input.
+    Professional Voice Synthesis: Integrates with the Murf AI API (specifically the en-US-Abigail voice) to create high-fidelity, human-like narration.
+    Automated File Retrieval: Includes a Podcast Downloader node that automatically fetches the final audio file from the Murf API response.
+    Chat-Triggered Workflow: Designed to be triggered via a chat interface, making it accessible for non-technical users to generate content on the fly.
+
+🛠️ Workflow Architecture
+     Trigger: Chat message received via n8n Chat Trigger.
+     Logic: The Podcast Script Generator (Gemini) processes the input into a friendly, label-free plain text script.
+     Synthesis: The script is POSTed to the Murf AI /v1/speech/generate endpoint.
+     Download: An HTTP Request node captures the resulting audioFile URL and downloads the binary data.
+
+🚀 Getting Started
+    Prerequisites
+      An n8n instance (v1.x or higher).
+      Google Gemini (PaLM) API Credentials.
+      A Murf AI API Key.
+📋 Use Cases
+       Daily News Briefs: Convert RSS feeds or headlines into quick daily updates.
+       Educational Content: Turn lesson summaries into "listen-while-you-learn" audio.
+       Social Media Marketing: Generate high-quality voiceovers for short-form video content (TikTok/Reels).
